@@ -8,26 +8,8 @@ docker run --rm kaczmarj/neurodocker:0.6.0 generate docker \
   --miniconda create_env=neuro \
               conda_install='numpy traits' \
   --miniconda use_env=neuro \
-              conda_install='jupyter' \
+              conda_install='jupyterhub' \
+              conda_install='jupyterlab' \
+              conda_install='notebook=6.0.0' \
+              conda_install='jupyter notebook --generate-config'
               miniconda_version="4.3.31" \
-  -o Dockerfile \
-  >> Dockerfile
-
-
-docker build -t gshearrer/fmribootcamp:0.05 .
-
-docker push gshearrer/fmribootcamp:0.05
-
-open -a XQuartz
-IP=$(ifconfig en1 | grep inet | awk '$1=="inet" {print $2}')
-xhost + $IP
-
-#docker run -it --rm \
-#-e DISPLAY=$IP:0 \
-#-v /tmp/.X11-unix:/tmp/ \
-#-p 5901:55901 \
-#--entrypoint /bin/bash \
-#gshearrer/fmribootcamp:0.05 \
-#xterm
-
-docker run --rm -it -p 5901:5901 gshearrer/fmribootcamp:0.05 xterm
