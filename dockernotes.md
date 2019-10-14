@@ -14,3 +14,8 @@ docker system prune -a
 
 ## Remove containers
 docker rm ID_or_Name ID_or_Name
+
+## DISPLAY
+open -a XQuartz
+IP=$(ifconfig en1 | grep inet | awk '$1=="inet" {print $2}')
+xhost + $IP
