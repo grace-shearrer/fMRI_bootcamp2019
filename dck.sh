@@ -11,5 +11,5 @@ docker run --rm kaczmarj/neurodocker:0.6.0 generate docker \
               conda_install='jupyterhub' \
               conda_install='jupyterlab' \
               conda_install='notebook=6.0.0' \
-              conda_install='jupyter notebook --generate-config'
-              miniconda_version="4.3.31" \
+              #conda_install='jupyter notebook --generate-config'
+              miniconda_version="4.3.31" 
