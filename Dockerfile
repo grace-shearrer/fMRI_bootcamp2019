@@ -17,7 +17,19 @@ RUN apt-get update
 RUN apt-get install -y fsl-5.0-complete
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
     locale-gen
+RUN apt-get install -y firefox
 
+RUN export uid=1000 gid=1000 && \
+    mkdir -p /home/developer && \
+    echo "developer:x:${uid}:${gid}:Developer,,,:/home/developer:/bin/bash" >> /etc/passwd && \
+    echo "developer:x:${uid}:" >> /etc/group && \
+    echo "developer ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/developer && \
+    chmod 0440 /etc/sudoers.d/developer && \
+    chown ${uid}:${gid} -R /home/developer
+
+USER developer
+ENV HOME /home/developer
+CMD /usr/bin/firefox
 
 
 # Configure environment for FSL
@@ -35,6 +47,15 @@ ENV FSLTCLSH=/usr/bin/tclsh
 ENV FSLWISH=/usr/bin/wish
 ENV POSSUMDIR=/usr/share/fsl/5.0
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
+
+# FSL Setup
+RUN echo "FSLDIR=/usr/share/fsl/5.0" >> ~/.bashrc
+RUN echp "PATH=${FSLDIR}/bin:${PATH}" >> ~/.bashrc
+RUN echp "export FSLDIR PATH" >> ~/.bashrc
+
+
+
+RUN echo ". ${FSLDIR}/etc/fsl/5.0/fsl.sh" >> ~/.bashrc
 
 
 # Getting stuff for Anaconda3
@@ -104,7 +125,8 @@ RUN mkdir /home/$NB_USER/work && \
 
 # Run configuration script for normal usage
 # RUN chmod 755 /root/
-RUN echo ". /etc/fsl/5.0/fsl.sh" >> ~/.bashrc
+
+
 
 RUN conda install --quiet --yes \
     'notebook=6.0.0' \
