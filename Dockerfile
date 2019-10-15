@@ -107,6 +107,15 @@ RUN apt-get update -qq \
 
 ENV CONDA_DIR="/opt/miniconda-latest" \
     PATH="/opt/miniconda-latest/bin:$PATH"
+    SHELL=/bin/bash \
+    NB_USER=$NB_USER \
+    NB_UID=$NB_UID \
+    NB_GID=$NB_GID \
+    LC_ALL=en_US.UTF-8 \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US.UTF-8
+ENV PATH=$CONDA_DIR/bin:$PATH \
+        HOME=/home/$NB_USER
 RUN export PATH="/opt/miniconda-latest/bin:$PATH" \
     && echo "Downloading Miniconda installer ..." \
     && conda_installer="/tmp/miniconda.sh" \
@@ -124,11 +133,68 @@ RUN export PATH="/opt/miniconda-latest/bin:$PATH" \
            "traits" \
     && sync && conda clean --all && sync
 
+
+# Add a script that we will use to correct permissions after running certain commands
+
+ADD fix-permissions /usr/local/bin/fix-permissions
+
+
+# Enable prompt color in the skeleton .bashrc before creating the default NB_USER
+RUN sed -i 's/^#force_color_prompt=yes/force_color_prompt=yes/' /etc/skel/.bashrc
+
+# Create NB_USER wtih name jovyan user with UID=1000 and in the 'users' group
+# and make sure these dirs are writable by the `users` group.
+RUN echo "auth requisite pam_deny.so" >> /etc/pam.d/su && \
+    sed -i.bak -e 's/^%admin/#%admin/' /etc/sudoers && \
+    sed -i.bak -e 's/^%sudo/#%sudo/' /etc/sudoers && \
+    useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
+    mkdir -p $CONDA_DIR && \
+    chown $NB_USER:$NB_GID $CONDA_DIR && \
+    chmod g+w /etc/passwd && \
+    fix-permissions $HOME && \
+    fix-permissions "$(dirname $CONDA_DIR)"
+
+USER $NB_UID
+WORKDIR $HOME
+
+# Setup work directory for backward-compatibility
+RUN mkdir /home/$NB_USER/work && \
+    fix-permissions /home/$NB_USER
+
 RUN conda install -y -q --name neuro \
-           "jupyter" \
-           "notebook" \
-           "--generate-config" \
+    'notebook=6.0.0' \
+    'jupyterhub=1.0.0' \
+    'jupyterlab=1.1.3' && \
+    conda clean --all -y && \
+    npm cache clean --force && \
+    jupyter notebook --generate-config && \
+    rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
+    rm -rf /home/$NB_USER/.cache/yarn && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER \
     && sync && conda clean --all && sync
+
+
+RUN mkdir -p ~/.jupyter && echo c.NotebookApp.ip = \"0.0.0.0\" > ~/.jupyter/jupyter_notebook_config.py
+EXPOSE 8888
+
+# Configure container startup
+ENTRYPOINT ["tini", "-g", "--"]
+CMD ["start-notebook.sh","/bin/bash"]
+
+# Add local files as late as possible to avoid cache busting
+COPY start.sh /usr/local/bin/
+COPY start-notebook.sh /usr/local/bin/
+COPY start-singleuser.sh /usr/local/bin/
+COPY jupyter_notebook_config.py /etc/jupyter/
+
+# Fix permissions on /etc/jupyter as root
+USER root
+RUN fix-permissions /etc/jupyter/
+
+# Switch back to jovyan to avoid accidental container runs as root
+# USER $NB_UID
+
 
 RUN echo '{ \
     \n  "pkg_manager": "apt", \
@@ -179,8 +245,9 @@ RUN echo '{ \
     \n      { \
     \n        "use_env": "neuro", \
     \n        "conda_install": [ \
-    \n          "jupyter", \
-    \n          "notebook", \
+    \n          'jupyterhub=1.0.0', \
+    \n          'jupyterlab=1.1.3', \
+    \n          "notebook=6.0.0", \
     \n          "--generate-config" \
     \n        ] \
     \n      } \
