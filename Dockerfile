@@ -162,7 +162,6 @@ RUN mkdir /home/$NB_USER/work && \
     fix-permissions /home/$NB_USER
 
 RUN conda install -y -q --name neuro \
-<<<<<<< HEAD
     'notebook=6.0.0' \
     'jupyterhub=1.0.0' \
     'jupyterlab=1.1.3' && \
@@ -173,9 +172,7 @@ RUN conda install -y -q --name neuro \
     rm -rf /home/$NB_USER/.cache/yarn && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER \
-=======
            "notebook=6.0.0" \
->>>>>>> 2c5cea7f903d78eda3c7fb875ad2f06cbe720100
     && sync && conda clean --all && sync
 
 
@@ -249,14 +246,11 @@ RUN echo '{ \
     \n      { \
     \n        "use_env": "neuro", \
     \n        "conda_install": [ \
-<<<<<<< HEAD
     \n          'jupyterhub=1.0.0', \
     \n          'jupyterlab=1.1.3', \
     \n          "notebook=6.0.0", \
     \n          "--generate-config" \
-=======
     \n          "notebook=6.0.0" \
->>>>>>> 2c5cea7f903d78eda3c7fb875ad2f06cbe720100
     \n        ] \
     \n      } \
     \n    ] \
