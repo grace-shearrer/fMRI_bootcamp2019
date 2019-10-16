@@ -37,7 +37,7 @@ If that is all good (or if it isn't but you want to stop) type
 exit
 in the vnc terminal
 
-# Feeling advanced you can play with this and test the jupyter notebooks
+# Feeling advanced? You can play with this and test the jupyter notebooks
 ## Note you need to change the path to your machine
 docker run --rm -it -p 8888:8888  -p 5901:5901 -v /Users/gracer/Google\ Drive/fMRI_workshop/2019/4dock/notebooks/:/home/jovyan/work gshearrer/fmribootcamp:0.05 xterm
 
@@ -54,4 +54,5 @@ Please visit the documentation site for help using and contributing to this imag
 * [Jupyter Docker Stacks on ReadTheDocs](http://jupyter-docker-stacks.readthedocs.io/en/latest/index.html)
 * [Selecting an Image :: Core Stacks :: jupyter/base-notebook](http://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html#jupyter-base-notebook)
 
-# Build with Neurodocker
+# Built with Neurodocker
+https://github.com/kaczmarj/neurodocker
