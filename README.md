@@ -16,10 +16,10 @@ docker pull gshearrer/fmribootcamp:0.05
 This is gonna take a minute. While you are waiting brush up on linux!
 http://www.ee.surrey.ac.uk/Teaching/Unix/
 
-#Open a terminal and type the following
-open -a XQuartz
-IP=$(ifconfig en1 | grep inet | awk '$1=="inet" {print $2}')
-xhost + $IP
+# Open a terminal and type the following
+open -a XQuartz  
+IP=$(ifconfig en1 | grep inet | awk '$1=="inet" {print $2}')  
+xhost + $IP  
 
 
 # Test the docker
