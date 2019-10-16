@@ -1,0 +1,3 @@
+[submodule "neurodocker_mod"]
+	path = neurodocker_mod
+	url = https://github.com/kaczmarj/neurodocker
