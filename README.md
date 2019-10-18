@@ -56,3 +56,6 @@ Please visit the documentation site for help using and contributing to this imag
 
 # Built with Neurodocker
 https://github.com/kaczmarj/neurodocker
+
+# This workshop is using data from OpenNeuro
+ds001966-1.0.1
