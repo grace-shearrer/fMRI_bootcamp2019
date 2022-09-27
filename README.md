@@ -59,3 +59,6 @@ https://github.com/kaczmarj/neurodocker
 
 # This workshop is using data from OpenNeuro
 ds001966-1.0.1
+
+# Linux tutorial 
+http://www.ee.surrey.ac.uk/Teaching/Unix/
